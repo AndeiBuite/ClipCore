@@ -1,3 +1,13 @@
+# InteliiJ IDEA
+.idea
+
+# Cache File
+out
+log
+target
+cache
+
+
 # Compiled class file
 *.class
 
