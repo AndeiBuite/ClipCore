@@ -22,7 +22,7 @@ object ClipProject
 	{
 		println( "--- Minecraft Client Launcher Core ---" )
 		println( "$name - $version" )
-		println( "\nDeveloped By\n$authorList\n" )
+		println( "Developed By $authorList" )
 		println( "Running at: $systemOriginalName" )
 		println( "--------------------------------------" )
 
