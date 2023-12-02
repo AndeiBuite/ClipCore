@@ -6,7 +6,7 @@ import java.security.MessageDigest
 import java.util.*
 
 
-object AccountUtils
+object MinecraftAccountUtils
 {
 	// 生成 UUID 与 Token
 	fun generateInfoPack( name: String ): InfoPack

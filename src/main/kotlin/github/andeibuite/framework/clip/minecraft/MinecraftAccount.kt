@@ -1,8 +1,12 @@
 package github.andeibuite.framework.clip.minecraft
 
+import github.andeibuite.framework.clip.extension.generateMicrosoftSession
 import github.andeibuite.framework.clip.extension.toJson
+import github.andeibuite.framework.clip.extension.toUUID
 import github.andeibuite.framework.clip.metadata.ClipConfig
-import github.andeibuite.framework.clip.utils.AccountUtils
+import github.andeibuite.framework.clip.minecraft.microsoft.MicrosoftAPI
+import github.andeibuite.framework.clip.utils.MinecraftAccountUtils
+import github.andeibuite.framework.clip.utils.createLogger
 import java.io.Serializable
 import java.util.UUID
 import java.util.Date
@@ -28,26 +32,42 @@ class MinecraftAccount private constructor(
 {
 	companion object
 	{
+		private val logger = createLogger( this::class )
+
+		private class LoginException( msg: String = "unknown cause" ): Exception( msg )
+
 		// 创建默认账户
 		fun createDefault(): MinecraftAccount = createOffline( ClipConfig.defaultAccountID )
 
 		// 创建离线账户
 		fun createOffline( accountName: String ): MinecraftAccount
 		{
-			val infoPack = AccountUtils.generateInfoPack( accountName )
+			logger.debug("Try to login with offline")
+			val infoPack = MinecraftAccountUtils.generateInfoPack( accountName )
 			return MinecraftAccount( accountName, infoPack.uuid, infoPack.token, "offline", null )
 		}
 
 		// 创建 Microsoft 账户
-		fun createMicrosoft()
+		fun createMicrosoft(): MinecraftAccount
 		{
+			logger.debug("Try to login with microsoft")
+			val session = MicrosoftAPI.generateMicrosoftSession()
+			val profile = MicrosoftAPI.getMinecraftProfile( session )
 
+			val name = profile.name ?: throw LoginException("Bad profile")
+			val uuid = ( profile.id ?: throw LoginException("Bad profile") ).toUUID()
+			val token = session.minecraftAccessToken
+
+			logger.debug("Succeed to login with microsoft")
+			return MinecraftAccount(name, uuid, token, "microsoft", null)
 		}
 
 		// 创建 Yggdrasil 账户
-		@Deprecated("Bad way to login", ReplaceWith("createMicrosoft()"))
-		fun createYggdrasil()
+		@Deprecated("Bad way to login",
+			ReplaceWith("package github.andeibuite.framework.clip.minecraft.companion.createMicrosoft()"))
+		fun createYggdrasil(): MinecraftAccount
 		{
+			logger.debug("Try to login with yggdrasil")
 			TODO("Mojang 登录一点都没做")
 		}
 
