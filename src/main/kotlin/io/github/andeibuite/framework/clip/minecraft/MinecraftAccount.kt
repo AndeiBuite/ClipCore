@@ -5,6 +5,7 @@ import io.github.andeibuite.framework.clip.extension.toJson
 import io.github.andeibuite.framework.clip.extension.toUUID
 import io.github.andeibuite.framework.clip.metadata.ClipConfig
 import io.github.andeibuite.framework.clip.minecraft.microsoft.MicrosoftAPI
+import io.github.andeibuite.framework.clip.minecraft.microsoft.response.MicrosoftSession
 import io.github.andeibuite.framework.clip.utils.MinecraftAccountUtils
 import io.github.andeibuite.framework.clip.utils.createLogger
 import java.io.Serializable
@@ -47,19 +48,18 @@ class MinecraftAccount private constructor(
 			return MinecraftAccount( accountName, infoPack.uuid, infoPack.token, "offline", null )
 		}
 
-		// 创建 Microsoft 账户
-		fun createMicrosoft(): MinecraftAccount
+		// 创建新的 Microsoft 账户
+		fun createMicrosoft( microsoftSession: MicrosoftSession = MicrosoftAPI.generateMicrosoftSession() ): MinecraftAccount
 		{
 			logger.debug("Try to login with microsoft")
-			val session = MicrosoftAPI.generateMicrosoftSession()
-			val profile = MicrosoftAPI.getMinecraftProfile( session )
+			val profile = MicrosoftAPI.getMinecraftProfile( microsoftSession )
 
 			val name = profile.name ?: throw LoginException("Bad profile")
-			val uuid = ( profile.id ?: throw LoginException("Bad profile") ).toUUID()
-			val token = session.minecraftAccessToken
+			val uuidString = profile.id ?: throw LoginException("Bad profile")
+			val token = microsoftSession.minecraftAccessToken
 
 			logger.debug("Succeed to login with microsoft")
-			return MinecraftAccount(name, uuid, token, "microsoft", null)
+			return MinecraftAccount(name, uuidString.toUUID(), token, "microsoft", null)
 		}
 
 		// 创建 Yggdrasil 账户

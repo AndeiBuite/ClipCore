@@ -15,7 +15,7 @@ fun std()
 {
 	// 创建 Minecraft 实例需要的参数
 	val struct = MinecraftStruct.createStandard("./minecraft")
-	val account = MinecraftAccount.createOffline( "player" )
+	val account = MinecraftAccount.createMicrosoft()
 	val version = "1.17.1"
 
 	// 创建 Minecraft 实例
